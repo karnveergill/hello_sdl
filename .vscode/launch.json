@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations":
+    [
+        { // build and run hello_sdl as a debug binary
+            "name": "(lldb) hello_sdl",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/${workspaceFolderBasename}",
+            "MIMode": "lldb",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build_debug",
+            "args": [],
+            "stopAtEntry": false,
+            "externalConsole": false,
+        },
+        { // build and run hello_sdl as a release binary
+            "name": "(release) hello_sdl",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/${workspaceFolderBasename}",
+            "MIMode": "lldb",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build",
+            "args": [],
+            "stopAtEntry": false,
+            "externalConsole": false,
+        }
+    ] // configurations
+}
