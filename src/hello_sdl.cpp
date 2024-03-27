@@ -1,7 +1,11 @@
 #include <iostream>
+#include <string>
 #include <SDL.h>
+#include <SDL_ttf.h>
 
-// Constants
+///////////////////////////////////////////////////////////////////////////////
+// Constants //////////////////////////////////////////////////////////////////
+
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
 const int WINDOW_CENTER_X = WINDOW_WIDTH / 2;
@@ -12,7 +16,27 @@ const int PADDLE_SPEED = 5;
 const int BALL_SIZE = 10;
 const int BALL_SPEED = 5;
 
+///////////////////////////////////////////////////////////////////////////////
+// Function Declarations //////////////////////////////////////////////////////
+
 // Function to handle collision with walls
+void handleWallCollision(SDL_Rect& ballRect, int& xVel, int& yVel);
+
+// Function to handle collision with paddles
+void handlePaddleCollision(SDL_Rect& ballRect, 
+                           const SDL_Rect& leftPaddleRect, 
+                           const SDL_Rect& rightPaddleRect, 
+                           int& xVel);
+
+// Function center a rectangle on window
+void centerRect(SDL_Rect& rect);
+
+// Function to handle ball out of bounds and increment player score
+void handleBallOutOfBound(SDL_Rect& ball, int& p1_score, int& p2_score);
+
+///////////////////////////////////////////////////////////////////////////////
+// Function Impelmentations ///////////////////////////////////////////////////
+
 void handleWallCollision(SDL_Rect& ballRect, int& xVel, int& yVel) 
 {
     if(ballRect.y <= 0 || ballRect.y + BALL_SIZE >= WINDOW_HEIGHT)
@@ -21,7 +45,8 @@ void handleWallCollision(SDL_Rect& ballRect, int& xVel, int& yVel)
     }
 }
 
-// Function to handle collision with paddles
+///////////////////////////////////////////////////////////////////////////////
+
 void handlePaddleCollision(SDL_Rect& ballRect, 
                            const SDL_Rect& leftPaddleRect, 
                            const SDL_Rect& rightPaddleRect, 
@@ -34,18 +59,40 @@ void handlePaddleCollision(SDL_Rect& ballRect,
     }
 }
 
-void handleBallOutOfBound(SDL_Rect& ball)
+///////////////////////////////////////////////////////////////////////////////
+
+void centerRect(SDL_Rect& rect)
 {
-    if(ball.x < 0 || ball.x > WINDOW_WIDTH)
+    rect.x = WINDOW_CENTER_X;
+    rect.y = WINDOW_CENTER_Y;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void handleBallOutOfBound(SDL_Rect& ball, int& p1_score, int& p2_score)
+{
+    if(ball.x < 0)
     {
-        ball.x = WINDOW_CENTER_X;
-        ball.y = WINDOW_CENTER_Y;
+        p1_score++;
+        centerRect(ball);
+    }
+    else if(ball.x > WINDOW_WIDTH)
+    {
+        p2_score++;
+        centerRect(ball);
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Application Entry///////////////////////////////////////////////////////////
+
 int main() 
 {
-    SDL_Init(SDL_INIT_VIDEO);
+    if(SDL_Init(SDL_INIT_VIDEO) < 0)
+    {
+        printf("SDL Initialization failed: %s \n", SDL_GetError());
+        return 1;
+    }
 
     // Create window and renderer
     SDL_Window* window = SDL_CreateWindow("Pong", 
@@ -54,7 +101,15 @@ int main()
                                           WINDOW_WIDTH, 
                                           WINDOW_HEIGHT, 
                                           SDL_WINDOW_SHOWN);
+
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    // Initialize SDL_ttf for text rendering
+    if(TTF_Init() == -1)
+    {
+        printf("Failed to initialize SDL_ttf: %s \n", TTF_GetError());
+        return 1;
+    }
 
     // Create paddles and ball
     SDL_Rect leftPaddle = {50, 
@@ -75,6 +130,10 @@ int main()
     // Set initial ball velocity
     int ballXVel = BALL_SPEED;
     int ballYVel = BALL_SPEED;
+
+    // Set initial player scores
+    int p1_score = 0;
+    int p2_score = 0;
 
     bool running = true;
     while (running) 
@@ -115,7 +174,7 @@ int main()
         handlePaddleCollision(ball, leftPaddle, rightPaddle, ballXVel);
 
         // Check for out of bounds
-        handleBallOutOfBound(ball);
+        handleBallOutOfBound(ball, p1_score, p2_score);
 
         // Clear the screen
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -126,6 +185,28 @@ int main()
         SDL_RenderFillRect(renderer, &leftPaddle);
         SDL_RenderFillRect(renderer, &rightPaddle);
         SDL_RenderFillRect(renderer, &ball);
+
+        // Draw Score on screen 
+        std::string p1_score_str = "P1: " + std::to_string(p1_score);
+        std::string p2_score_str = "P2: " + std::to_string(p2_score);
+        static const SDL_Color textColor = {255, 255, 255, 255}; 
+        static TTF_Font* font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", 24);
+
+        SDL_Surface* textSurface1 = TTF_RenderText_Solid(font, p1_score_str.c_str(), textColor);
+        SDL_Texture* texture1 = SDL_CreateTextureFromSurface(renderer, textSurface1);
+        SDL_Rect textRect1 = {10, 10, textSurface1->w, textSurface1->h};
+
+        SDL_RenderCopy(renderer, texture1, NULL, &textRect1);
+        SDL_FreeSurface(textSurface1);
+        SDL_DestroyTexture(texture1);
+
+        SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, p2_score_str.c_str(), textColor);
+        SDL_Texture* texture2 = SDL_CreateTextureFromSurface(renderer, textSurface2);
+        SDL_Rect textRect2 = {WINDOW_WIDTH - 100, 10, textSurface1->w, textSurface1->h};
+
+        SDL_RenderCopy(renderer, texture2, NULL, &textRect2);
+        SDL_FreeSurface(textSurface2);
+        SDL_DestroyTexture(texture2);
 
         // Update the screen
         SDL_RenderPresent(renderer);
