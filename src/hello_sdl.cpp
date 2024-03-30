@@ -192,24 +192,44 @@ int main()
         static const SDL_Color textColor = {255, 255, 255, 255}; 
         static TTF_Font* font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", 24);
 
-        SDL_Surface* textSurface1 = TTF_RenderText_Solid(font, p1_score_str.c_str(), textColor);
-        SDL_Texture* texture1 = SDL_CreateTextureFromSurface(renderer, textSurface1);
-        SDL_Rect textRect1 = {10, 10, textSurface1->w, textSurface1->h};
+        
 
-        SDL_RenderCopy(renderer, texture1, NULL, &textRect1);
-        SDL_FreeSurface(textSurface1);
-        SDL_DestroyTexture(texture1);
+        // Create texture with the ability to be used as render target 
+        // SDL_Texture* texture = SDL_CreateTexture(renderer, 
+        //                                          SDL_PIXELFORMAT_RGBA8888,
+        //                                          SDL_TEXTUREACCESS_TARGET, 
+        //                                          WINDOW_WIDTH, 
+        //                                          WINDOW_HEIGHT);
+
+        // Set render target to build out texture before rendering on window
+        //SDL_SetRenderTarget(renderer, texture);
+
+        SDL_Surface* textSurface1 = TTF_RenderText_Solid(font, p1_score_str.c_str(), textColor);
+        SDL_Rect textRect1 = {10, 10, textSurface1->w, textSurface1->h};
+        SDL_RenderCopy(renderer, 
+                       SDL_CreateTextureFromSurface(renderer, textSurface1),
+                       NULL, 
+                       &textRect1);
 
         SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, p2_score_str.c_str(), textColor);
-        SDL_Texture* texture2 = SDL_CreateTextureFromSurface(renderer, textSurface2);
         SDL_Rect textRect2 = {WINDOW_WIDTH - 100, 10, textSurface1->w, textSurface1->h};
+        SDL_RenderCopy(renderer, 
+                       SDL_CreateTextureFromSurface(renderer, textSurface2),
+                       NULL, 
+                       &textRect2);
 
-        SDL_RenderCopy(renderer, texture2, NULL, &textRect2);
-        SDL_FreeSurface(textSurface2);
-        SDL_DestroyTexture(texture2);
+        // Set renderer back to window 
+        //SDL_SetRenderTarget(renderer, nullptr);
 
+        //SDL_RenderCopy(renderer, texture, NULL, NULL);
         // Update the screen
         SDL_RenderPresent(renderer);
+
+        SDL_FreeSurface(textSurface1);
+        SDL_FreeSurface(textSurface2);
+        //SDL_DestroyTexture(texture);
+
+
         
         // Add a small delay to control the frame rate
         SDL_Delay(10);
