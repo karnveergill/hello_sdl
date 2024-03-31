@@ -153,14 +153,8 @@ int main()
     }
 
     // Create explosion image
-    SDL_Texture* explosion = IMG_LoadTexture(renderer, 
-                                             "/Users/karnveergill/Development/hello_sdl/resources/spark_flame.png");
-    int original_h = 0;
-    int original_w = 0;
-    int scale = 2; 
-    SDL_QueryTexture(explosion, nullptr, nullptr, &original_w, &original_h);
-    SDL_Rect explosion_rect = {0, 0, EXPLOSION_SIZE, EXPLOSION_SIZE}; //original_w/scale, original_h/scale};
-
+    SDL_Texture* explosion = IMG_LoadTexture(renderer, "resources/spark_flame.png");
+    SDL_Rect explosion_rect = {0, 0, EXPLOSION_SIZE, EXPLOSION_SIZE};
 
     // Create paddles and ball
     SDL_Rect leftPaddle = {50, 
@@ -255,7 +249,7 @@ int main()
         // Draw explosion
         if(m_show_explode)
         {
-            // copy explosion to render
+            // copy explosion to renderer
             explosion_rect.x = m_explosion_x;
             explosion_rect.y = m_explosion_y;
             SDL_RenderCopy(renderer, explosion, NULL, &explosion_rect);
@@ -271,7 +265,7 @@ int main()
         std::string p1_score_str = "P1: " + std::to_string(p1_score);
         std::string p2_score_str = "P2: " + std::to_string(p2_score);
         static const SDL_Color textColor = {255, 255, 255, 255}; 
-        static TTF_Font* font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", 24);
+        static TTF_Font* font = TTF_OpenFont("resources/arial_unicode.ttf", 24);
 
         SDL_Surface* textSurface1 = TTF_RenderText_Solid(font, p1_score_str.c_str(), textColor);
         SDL_Rect textRect1 = {10, 10, textSurface1->w, textSurface1->h};
