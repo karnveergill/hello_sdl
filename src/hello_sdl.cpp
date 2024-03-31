@@ -94,7 +94,7 @@ void centerRect(SDL_Rect& rect)
 bool handleBallOutOfBound(SDL_Rect& ball, int& p1_score, int& p2_score)
 {
     bool reset = false;
-    int shift = 1;
+    int shift = 0;
     if(ball.x < 0)
     {
         p2_score++;
