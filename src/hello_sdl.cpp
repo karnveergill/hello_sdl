@@ -17,8 +17,8 @@ const int PADDLE_SPEED = 10;
 const int BALL_SIZE = 10;
 const int BALL_SPEED = 5;
 const int RESET_TIME = 500;
-const int EXPLOSION_SIZE = 30;
-const int EXPLOSION_TIME = 150; 
+const int EXPLOSION_SIZE = 40;
+const int EXPLOSION_TIME = 100; 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Member Variables ///////////////////////////////////////////////////////////
@@ -32,10 +32,13 @@ uint32_t m_pause_start_time = 0;
 /// @brief Flag telling us when to show the explosion on screen
 bool m_show_explode = false; 
 
+/// @brief Start time for explosion animation
 uint32_t m_explode_start = 0; 
 
+/// @brief Explosion X position
 int m_explosion_x = 0; 
 
+/// @brief Explosion Y position
 int m_explosion_y = 0; 
 
 ///////////////////////////////////////////////////////////////////////////////
