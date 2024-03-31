@@ -2,6 +2,7 @@
 #include <string>
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <SDL_image.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Constants //////////////////////////////////////////////////////////////////
@@ -16,6 +17,8 @@ const int PADDLE_SPEED = 10;
 const int BALL_SIZE = 10;
 const int BALL_SPEED = 5;
 const int RESET_TIME = 500;
+const int EXPLOSION_SIZE = 30;
+const int EXPLOSION_TIME = 150; 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Member Variables ///////////////////////////////////////////////////////////
@@ -25,6 +28,15 @@ bool m_reseting = false;
 
 /// @brief Start time for ball reset pause
 uint32_t m_pause_start_time = 0;
+
+/// @brief Flag telling us when to show the explosion on screen
+bool m_show_explode = false; 
+
+uint32_t m_explode_start = 0; 
+
+int m_explosion_x = 0; 
+
+int m_explosion_y = 0; 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Function Prototypes ////////////////////////////////////////////////////////
@@ -81,21 +93,26 @@ void centerRect(SDL_Rect& rect)
 
 bool handleBallOutOfBound(SDL_Rect& ball, int& p1_score, int& p2_score)
 {
-    bool reset = false; 
+    bool reset = false;
+    int shift = 1;
     if(ball.x < 0)
     {
         p1_score++;
-        reset = true; 
-        
+        reset = true;
     }
     else if(ball.x > WINDOW_WIDTH)
     {
         p2_score++;
         reset = true;
+        shift = -1;
     }
 
     if(reset)
     {
+        // Save position before reset 
+        m_explosion_x = ball.x+(shift*EXPLOSION_SIZE);
+        m_explosion_y = ball.y;
+        // Center ball 
         centerRect(ball);
     }
 
@@ -121,7 +138,9 @@ int main()
                                           WINDOW_HEIGHT, 
                                           SDL_WINDOW_SHOWN);
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, 
+                                                -1,
+                                                SDL_RENDERER_ACCELERATED);
 
     // Initialize SDL_ttf for text rendering
     if(TTF_Init() == -1)
@@ -129,6 +148,16 @@ int main()
         printf("Failed to initialize SDL_ttf: %s \n", TTF_GetError());
         return 1;
     }
+
+    // Create explosion image
+    SDL_Texture* explosion = IMG_LoadTexture(renderer, 
+                                             "/Users/karnveergill/Development/hello_sdl/resources/spark_flame.png");
+    int original_h = 0;
+    int original_w = 0;
+    int scale = 2; 
+    SDL_QueryTexture(explosion, nullptr, nullptr, &original_w, &original_h);
+    SDL_Rect explosion_rect = {0, 0, EXPLOSION_SIZE, EXPLOSION_SIZE}; //original_w/scale, original_h/scale};
+
 
     // Create paddles and ball
     SDL_Rect leftPaddle = {50, 
@@ -154,6 +183,7 @@ int main()
     int p1_score = 0;
     int p2_score = 0;
 
+    // Run game 
     bool running = true;
     while (running) 
     {
@@ -184,19 +214,27 @@ int main()
             rightPaddle.y += PADDLE_SPEED;
         }
 
-        // Update ball position
+        // Check out of bounds 
         if(handleBallOutOfBound(ball, p1_score, p2_score))
         {
             m_pause_start_time = SDL_GetTicks();
+            m_explode_start = SDL_GetTicks();
             m_reseting = true;
+            m_show_explode = true; 
         }
 
+        // Check timers 
         uint32_t now = SDL_GetTicks();
         if(now - m_pause_start_time > RESET_TIME)
         {
             m_reseting = false; 
         }
+        if(now - m_explode_start > EXPLOSION_TIME)
+        {
+            m_show_explode = false; 
+        }
 
+        // Update ball position
         if(!m_reseting)
         {
             ball.x += ballXVel;
@@ -211,6 +249,15 @@ int main()
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
+        // Draw explosion
+        if(m_show_explode)
+        {
+            // copy explosion to render
+            explosion_rect.x = m_explosion_x;
+            explosion_rect.y = m_explosion_y;
+            SDL_RenderCopy(renderer, explosion, NULL, &explosion_rect);
+        }
+
         // Draw paddles and ball
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderFillRect(renderer, &leftPaddle);
@@ -222,7 +269,6 @@ int main()
         std::string p2_score_str = "P2: " + std::to_string(p2_score);
         static const SDL_Color textColor = {255, 255, 255, 255}; 
         static TTF_Font* font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", 24);
-
 
         SDL_Surface* textSurface1 = TTF_RenderText_Solid(font, p1_score_str.c_str(), textColor);
         SDL_Rect textRect1 = {10, 10, textSurface1->w, textSurface1->h};
