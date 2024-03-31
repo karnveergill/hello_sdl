@@ -53,7 +53,7 @@ void handlePaddleCollision(SDL_Rect& ballRect,
                            const SDL_Rect& rightPaddleRect, 
                            int& xVel);
 
-/// @brief Function center a rectangle on window
+/// @brief Function to center a rectangle on window
 void centerRect(SDL_Rect& rect);
 
 /// @brief Function to handle ball out of bounds and increment player score
