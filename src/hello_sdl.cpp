@@ -97,12 +97,12 @@ bool handleBallOutOfBound(SDL_Rect& ball, int& p1_score, int& p2_score)
     int shift = 1;
     if(ball.x < 0)
     {
-        p1_score++;
+        p2_score++;
         reset = true;
     }
     else if(ball.x > WINDOW_WIDTH)
     {
-        p2_score++;
+        p1_score++;
         reset = true;
         shift = -1;
     }
