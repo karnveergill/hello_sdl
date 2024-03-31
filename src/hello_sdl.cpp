@@ -12,27 +12,37 @@ const int WINDOW_CENTER_X = WINDOW_WIDTH / 2;
 const int WINDOW_CENTER_Y = WINDOW_HEIGHT / 2;
 const int PADDLE_WIDTH = 10;
 const int PADDLE_HEIGHT = 100;
-const int PADDLE_SPEED = 5;
+const int PADDLE_SPEED = 10;
 const int BALL_SIZE = 10;
 const int BALL_SPEED = 5;
+const int RESET_TIME = 500;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Function Declarations //////////////////////////////////////////////////////
+// Member Variables ///////////////////////////////////////////////////////////
 
-// Function to handle collision with walls
+/// @brief Flag telling us if the we are reseting the ball and need to pause
+bool m_reseting = false; 
+
+/// @brief Start time for ball reset pause
+uint32_t m_pause_start_time = 0;
+
+///////////////////////////////////////////////////////////////////////////////
+// Function Prototypes ////////////////////////////////////////////////////////
+
+/// @brief Function to handle collision with walls
 void handleWallCollision(SDL_Rect& ballRect, int& xVel, int& yVel);
 
-// Function to handle collision with paddles
+/// @brief Function to handle collision with paddles
 void handlePaddleCollision(SDL_Rect& ballRect, 
                            const SDL_Rect& leftPaddleRect, 
                            const SDL_Rect& rightPaddleRect, 
                            int& xVel);
 
-// Function center a rectangle on window
+/// @brief Function center a rectangle on window
 void centerRect(SDL_Rect& rect);
 
-// Function to handle ball out of bounds and increment player score
-void handleBallOutOfBound(SDL_Rect& ball, int& p1_score, int& p2_score);
+/// @brief Function to handle ball out of bounds and increment player score
+bool handleBallOutOfBound(SDL_Rect& ball, int& p1_score, int& p2_score);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Function Impelmentations ///////////////////////////////////////////////////
@@ -69,18 +79,27 @@ void centerRect(SDL_Rect& rect)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void handleBallOutOfBound(SDL_Rect& ball, int& p1_score, int& p2_score)
+bool handleBallOutOfBound(SDL_Rect& ball, int& p1_score, int& p2_score)
 {
+    bool reset = false; 
     if(ball.x < 0)
     {
         p1_score++;
-        centerRect(ball);
+        reset = true; 
+        
     }
     else if(ball.x > WINDOW_WIDTH)
     {
         p2_score++;
+        reset = true;
+    }
+
+    if(reset)
+    {
         centerRect(ball);
     }
+
+    return reset; 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -166,15 +185,27 @@ int main()
         }
 
         // Update ball position
-        ball.x += ballXVel;
-        ball.y += ballYVel;
+        if(handleBallOutOfBound(ball, p1_score, p2_score))
+        {
+            m_pause_start_time = SDL_GetTicks();
+            m_reseting = true;
+        }
+
+        uint32_t now = SDL_GetTicks();
+        if(now - m_pause_start_time > RESET_TIME)
+        {
+            m_reseting = false; 
+        }
+
+        if(!m_reseting)
+        {
+            ball.x += ballXVel;
+            ball.y += ballYVel;
+        }
 
         // Check for collisions
         handleWallCollision(ball, ballXVel, ballYVel);
         handlePaddleCollision(ball, leftPaddle, rightPaddle, ballXVel);
-
-        // Check for out of bounds
-        handleBallOutOfBound(ball, p1_score, p2_score);
 
         // Clear the screen
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -192,17 +223,6 @@ int main()
         static const SDL_Color textColor = {255, 255, 255, 255}; 
         static TTF_Font* font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", 24);
 
-        
-
-        // Create texture with the ability to be used as render target 
-        // SDL_Texture* texture = SDL_CreateTexture(renderer, 
-        //                                          SDL_PIXELFORMAT_RGBA8888,
-        //                                          SDL_TEXTUREACCESS_TARGET, 
-        //                                          WINDOW_WIDTH, 
-        //                                          WINDOW_HEIGHT);
-
-        // Set render target to build out texture before rendering on window
-        //SDL_SetRenderTarget(renderer, texture);
 
         SDL_Surface* textSurface1 = TTF_RenderText_Solid(font, p1_score_str.c_str(), textColor);
         SDL_Rect textRect1 = {10, 10, textSurface1->w, textSurface1->h};
@@ -218,23 +238,18 @@ int main()
                        NULL, 
                        &textRect2);
 
-        // Set renderer back to window 
-        //SDL_SetRenderTarget(renderer, nullptr);
-
-        //SDL_RenderCopy(renderer, texture, NULL, NULL);
-        // Update the screen
+        // Update window display
         SDL_RenderPresent(renderer);
 
+        // Free up Surfaces
         SDL_FreeSurface(textSurface1);
         SDL_FreeSurface(textSurface2);
-        //SDL_DestroyTexture(texture);
 
-
-        
         // Add a small delay to control the frame rate
         SDL_Delay(10);
     }
 
+    // Destroy SDL assets
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
