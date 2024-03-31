@@ -1,6 +1,7 @@
 # hello_sdl : pong
 
 This repository contains pong writen using SDL2.  
+![pong game screenshot](doc/pong_screenshot.png)
 
 ## Dependencies
 The cmake build instructions assume you are running on a Mac OS and installed the following packages using `brew install`.
