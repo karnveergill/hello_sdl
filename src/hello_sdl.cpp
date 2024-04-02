@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <SDL_image.h>
+#include "version.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Constants //////////////////////////////////////////////////////////////////
@@ -125,8 +126,25 @@ bool handleBallOutOfBound(SDL_Rect& ball, int& p1_score, int& p2_score)
 ///////////////////////////////////////////////////////////////////////////////
 // Application Entry///////////////////////////////////////////////////////////
 
-int main() 
+int main(int argc, char* argv[]) 
 {
+    // Set application version 
+    static const std::string app_version = "v" 
+                                           + std::to_string(PROJECT_VERSION_MAJOR) + "." 
+                                           + std::to_string(PROJECT_VERSION_MINOR) + "." 
+                                           + std::to_string(PROJECT_VERSION_PATCH); 
+
+    // Handle application arguments 
+    for(int i = 1; i < argc; i++)
+    {
+        // Print version and leave application
+        if(std::string(argv[i]) == "--version" || std::string(argv[i]) == "-v")
+        {
+            printf("hello_sdl - pong : %s\n", app_version.c_str());
+            return 0; 
+        }
+    }
+
     if(SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         printf("SDL Initialization failed: %s \n", SDL_GetError());
@@ -134,7 +152,8 @@ int main()
     }
 
     // Create window and renderer
-    SDL_Window* window = SDL_CreateWindow("Pong", 
+    static const std::string window_title = "Pong " + app_version;
+    SDL_Window* window = SDL_CreateWindow(window_title.c_str(), 
                                           SDL_WINDOWPOS_CENTERED, 
                                           SDL_WINDOWPOS_CENTERED, 
                                           WINDOW_WIDTH, 
