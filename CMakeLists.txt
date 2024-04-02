@@ -4,7 +4,7 @@ project(hello_sdl)
 # Set version
 include(version.cmake)
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
-configure_file(version.cmake.in version.h)
+configure_file(version.cmake.in ${CMAKE_CURRENT_SOURCE_DIR}/src/version.h)
 
 # Copy image files to build directory
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
