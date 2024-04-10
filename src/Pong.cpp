@@ -18,8 +18,10 @@ Pong::Pong(SDL_Window* window,
     }
 
     // Get window width & height to derive paddle & ball positions
-    int m_window_width, m_window_height; 
-    SDL_GetWindowSize(window, &m_window_width, &m_window_height);
+    int width, height; 
+    SDL_GetWindowSize(window, &width, &height);
+    m_window_width = width;
+    m_window_height = height;
     m_window_center_x = m_window_width / 2;
     m_window_center_y = m_window_height / 2;
 
