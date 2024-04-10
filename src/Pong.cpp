@@ -17,7 +17,7 @@ Pong::Pong(SDL_Window* window,
                         TTF_GetError());
     }
 
-    // Get window width & height to derive paddle/ball positions
+    // Get window width & height to derive paddle & ball positions
     int window_w, window_h; 
     SDL_GetWindowSize(window, &window_w, &window_h);
     m_window_center_x = window_w / 2;
@@ -32,6 +32,18 @@ Pong::Pong(SDL_Window* window,
 
     m_ball.x = m_window_center_x;
     m_ball.y = m_window_center_y;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Pong::Init_explosion(std::string path)
+{
+    SDL_Texture* m_explosion = IMG_LoadTexture(m_renderer, path.c_str());
+    if(!m_explosion)
+    {
+        throw Exception("Failed to load explosion texture: %s", 
+                        IMG_GetError());
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
