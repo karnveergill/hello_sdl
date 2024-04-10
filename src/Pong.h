@@ -83,22 +83,32 @@ private:
     /**
      * @brief Windows center x position [pixels]
     */
-    int m_window_center_x{0};
+    int m_window_center_x = 0;
 
     /**
      * @brief Window center Y position [pixels]
     */
-    int m_window_center_y{0};
+    int m_window_center_y = 0;
+
+    /**
+     * @brief Window width [pixels]
+    */
+    int m_window_width = 0;
+
+    /**
+     * @brief Window height [pixels]
+    */
+    int m_window_height = 0;
 
     /**
      * @brief Player 1 score 
     */
-    int p1_score{0};
+    int p1_score = 0;
 
     /**
      * @brief Player 2 score 
     */
-    int p2_score{0};
+    int p2_score = 0;
 
     /**
      * @brief Texture of explosion image
