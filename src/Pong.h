@@ -20,18 +20,19 @@ public:
     */
     ~Pong() {}
 
-    /*
-     * @brief Initialize use of explosion graphic in game
-     * @param path Path to explosion image to load
-    */
-    void Init_explosion(std::string path);
-
     /**
      * @brief Initialize SDL_ttf & Explosion asset
-     * @param explosion_path Path to explosion image
+     * @param explosion_path [Optional] Path to explosion image
      * @throws If initialization fails, Exception thrown. 
     */
     void Init_pong(const std::string& explosion_path="");
+
+    /**
+     * @brief Initialize use of explosion graphic in game
+     * @param path Path to explosion image to load
+     * @throws If failed to load graphic, Exception thrown
+    */
+    void Init_explosion(const std::string& path);
 
     // Functions to engage different game modes.  
     void Run_main_menu();

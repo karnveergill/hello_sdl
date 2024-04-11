@@ -36,12 +36,13 @@ void Pong::Init_pong(const std::string& explosion_path)
     // If we got an explosion asset load it
     if(!explosion_path.empty())
     {
-        SDL_Texture* m_explosion = IMG_LoadTexture(m_renderer, 
-                                                   explosion_path.c_str());
-        if(!m_explosion)
+        try
         {
-            throw Exception("Failed to load explosion texture: %s\n", 
-                            IMG_GetError());
+            Init_explosion(explosion_path);
+        }
+        catch(const std::exception& e)
+        {
+            throw;
         }
     }
 
@@ -55,7 +56,7 @@ void Pong::Init_pong(const std::string& explosion_path)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Pong::Init_explosion(std::string path)
+void Pong::Init_explosion(const std::string& path)
 {
     SDL_Texture* m_explosion = IMG_LoadTexture(m_renderer, path.c_str());
     if(!m_explosion)
