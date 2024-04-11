@@ -7,7 +7,7 @@
 
 Pong::Pong(SDL_Window* window, 
            SDL_Renderer* renderer, 
-           std::string explosion_asset="")
+           std::string explosion_asset)
     :m_window(window),
      m_renderer(renderer)
 {
@@ -64,7 +64,7 @@ void Pong::Run_game_2_player()
 {
     // This should call all the stuff that draws the 2 player game on the screen
 
-    // Move paddles based on key inputs
+    // Update paddles based on key inputs
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
     if (keystates[SDL_SCANCODE_W] && m_paddle_1.y > 0)
     {
@@ -82,6 +82,9 @@ void Pong::Run_game_2_player()
     {
         m_paddle_2.y += PADDLE_SPEED;
     }
+
+    // Update ball 
+    update_ball();
     
     // Clear the screen
     SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
@@ -95,6 +98,43 @@ void Pong::Run_game_2_player()
 
     // Update window display
     SDL_RenderPresent(m_renderer);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Pong::update_ball()
+{
+    // Check out of bounds 
+    if(handle_ball_out_of_bound(m_ball, m_p1_score, m_p2_score))
+    {
+        // Set start times and flags
+        m_pause_start_t = SDL_GetTicks();
+        m_explode_start_t = SDL_GetTicks(); 
+        m_reseting = true;
+        m_exploding = true;
+    }
+
+    // Check timers
+    uint32_t now = SDL_GetTicks();
+    if(now - m_pause_start_t > RESET_TIME)
+    {
+        m_reseting = false;
+    }
+    if(now - m_explode_start_t > EXPLOSION_TIME)
+    {
+        m_exploding = false; 
+    }
+
+    // Update ball position
+    if(!m_reseting)
+    {
+        m_ball.x += m_ball_x_vel;
+        m_ball.y += m_ball_y_vel;
+    }
+
+    // Check ceiling and paddle collisions
+    handle_ceiling_collision(m_ball, m_ball_y_vel);
+    handle_paddle_collision(m_ball, m_paddle_1, m_paddle_2, m_ball_x_vel);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -123,7 +163,7 @@ void Pong::handle_paddle_collision(const SDL_Rect& ball,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Pong::handle_ball_out_of_bound(SDL_Rect& ball, 
+bool Pong::handle_ball_out_of_bound(SDL_Rect& ball, 
                                     int& p1_score, 
                                     int& p2_score)
 {
@@ -144,18 +184,14 @@ void Pong::handle_ball_out_of_bound(SDL_Rect& ball,
     if(reset)
     {
         // Save position
-        m_explosion.x = ball.x+(shift*EXPLOSION_SIZE);
-        m_explosion.y = ball.y; 
+        m_explosion_pos.x = ball.x+(shift*EXPLOSION_SIZE);
+        m_explosion_pos.y = ball.y; 
 
         // Reset ball
         center_rect(ball);
-
-        // Set start times and flags
-        m_pause_start_t = SDL_GetTicks();
-        m_explode_start_t = SDL_GetTicks(); 
-        m_reseting = true;
-        m_exploding = true;
     }
+
+    return reset; 
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -39,7 +39,7 @@ private:
     /**
      * Run check on all game collisions (ceilings, paddles, out of bounds)
     */
-    void check_all_collisions();
+    void update_ball();
 
     /**
      * @brief Handle collision between ball & ceiling
@@ -56,8 +56,9 @@ private:
 
     /**
      * @brief Handle ball out of bounds
+     * @return True if ball has gone out of bounds and is being reset
     */
-    void handle_ball_out_of_bound(SDL_Rect& ball, int& p1_score, int& p2_score);
+    bool handle_ball_out_of_bound(SDL_Rect& ball, int& p1_score, int& p2_score);
 
     /**
      * @brief Center a rectangle on window
