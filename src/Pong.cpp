@@ -6,18 +6,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 Pong::Pong(SDL_Window* window, 
-           SDL_Renderer* renderer, 
-           std::string explosion_asset)
+           SDL_Renderer* renderer)
     :m_window(window),
      m_renderer(renderer)
 {
-    // Initialize SDL_ttf for text rendering
-    if(TTF_Init() == -1) 
-    {
-        throw Exception("SDL_ttf initialization failed %s\n",
-                        TTF_GetError());
-    }
-
     // Get window width & height to derive paddle & ball positions
     int width, height; 
     SDL_GetWindowSize(window, &width, &height);
@@ -35,14 +27,29 @@ Pong::Pong(SDL_Window* window,
 
     m_ball.x = m_window_center_x;
     m_ball.y = m_window_center_y;
+}
 
-    if(explosion_asset.empty())
+///////////////////////////////////////////////////////////////////////////////
+
+void Pong::Init_pong(const std::string& explosion_path)
+{
+    // If we got an explosion asset load it
+    if(!explosion_path.empty())
     {
-        printf("No explosion asset loaded into game\n");
+        SDL_Texture* m_explosion = IMG_LoadTexture(m_renderer, 
+                                                   explosion_path.c_str());
+        if(!m_explosion)
+        {
+            throw Exception("Failed to load explosion texture: %s\n", 
+                            IMG_GetError());
+        }
     }
-    else
+
+    // Initialize SDL_ttf for text rendering
+    if(TTF_Init() == -1) 
     {
-        Init_explosion(explosion_asset);
+        throw Exception("SDL_ttf initialization failed %s\n",
+                        TTF_GetError());
     }
 }
 

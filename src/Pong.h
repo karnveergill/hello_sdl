@@ -13,8 +13,7 @@ public:
      *        construction
     */
     Pong(SDL_Window* window, 
-         SDL_Renderer* renderer, 
-         std::string explosion_asset="");
+         SDL_Renderer* renderer);
     
     /*
      * @brief Destructor
@@ -27,6 +26,13 @@ public:
     */
     void Init_explosion(std::string path);
 
+    /**
+     * @brief Initialize SDL_ttf & Explosion asset
+     * @param explosion_path Path to explosion image
+     * @throws If initialization fails, Exception thrown. 
+    */
+    void Init_pong(const std::string& explosion_path="");
+
     // Functions to engage different game modes.  
     void Run_main_menu();
     void Run_game_1_player();
@@ -37,7 +43,7 @@ public:
 private:
     // Functions
     /**
-     * Run check on all game collisions (ceilings, paddles, out of bounds)
+     * Update the ball position and velocity
     */
     void update_ball();
 
