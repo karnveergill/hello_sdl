@@ -39,7 +39,7 @@ private:
     /**
      * Run check on all game collisions (ceilings, paddles, out of bounds)
     */
-    void check_collisions();
+    void check_all_collisions();
 
     /**
      * @brief Handle collision between ball & ceiling
@@ -139,12 +139,12 @@ private:
     /**
      * @brief Player 1 score 
     */
-    int p1_score = 0;
+    int m_p1_score = 0;
 
     /**
      * @brief Player 2 score 
     */
-    int p2_score = 0;
+    int m_p2_score = 0;
 
     /**
      * @brief Texture of explosion image
