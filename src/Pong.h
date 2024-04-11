@@ -33,6 +33,30 @@ public:
     void Run_player_pause(); 
 
 private:
+    // Functions
+    /**
+     * @brief Handle collision between ball & ceiling
+    */
+    void handle_ceiling_collision(const SDL_Rect& ball, int& y_vel);
+
+    /**
+     * @brief Handle collision between ball & paddle
+    */
+    void handle_paddle_collision(const SDL_Rect& ball,
+                                 const SDL_Rect& paddle_1,
+                                 const SDL_Rect& paddle_2,
+                                 int& x_vel);
+
+    /**
+     * @brief Handle ball out of bounds
+    */
+    void handle_ball_out_of_bound(SDL_Rect& ball, int& p1_score, int& p2_score);
+
+    /**
+     * @brief Center a rectangle on window
+    */
+    void center_rect(SDL_Rect& rect);
+
     // Constants
     const int PADDLE_WIDTH = 10;
     const int PADDLE_HEIGHT = 100;
