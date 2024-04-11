@@ -5,8 +5,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-Pong::Pong(SDL_Window* window,
-           SDL_Renderer* renderer)
+Pong::Pong(SDL_Window* window, 
+           SDL_Renderer* renderer, 
+           std::string explosion_asset="")
     :m_window(window),
      m_renderer(renderer)
 {
@@ -35,7 +36,14 @@ Pong::Pong(SDL_Window* window,
     m_ball.x = m_window_center_x;
     m_ball.y = m_window_center_y;
 
-    
+    if(explosion_asset.empty())
+    {
+        printf("No explosion asset loaded into game\n");
+    }
+    else
+    {
+        Init_explosion(explosion_asset);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,7 +82,7 @@ void Pong::Run_game_2_player()
     {
         m_paddle_2.y += PADDLE_SPEED;
     }
-
+    
     // Clear the screen
     SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
     SDL_RenderClear(m_renderer);
@@ -126,6 +134,27 @@ void Pong::handle_ball_out_of_bound(SDL_Rect& ball,
         reset = true;
         p1_score++;
         shift = -1;
+    }
+    else if(ball.x < 0)
+    {
+        reset = true;
+        p2_score++;
+    }
+
+    if(reset)
+    {
+        // Save position
+        m_explosion.x = ball.x+(shift*EXPLOSION_SIZE);
+        m_explosion.y = ball.y; 
+
+        // Reset ball
+        center_rect(ball);
+
+        // Set start times and flags
+        m_pause_start_t = SDL_GetTicks();
+        m_explode_start_t = SDL_GetTicks(); 
+        m_reseting = true;
+        m_exploding = true;
     }
 }
 

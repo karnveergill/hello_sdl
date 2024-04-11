@@ -12,7 +12,9 @@ public:
      * @brief Constructor for pong game. Requires window and renderer for game
      *        construction
     */
-    Pong(SDL_Window* window, SDL_Renderer* renderer);
+    Pong(SDL_Window* window, 
+         SDL_Renderer* renderer, 
+         std::string explosion_asset="");
     
     /*
      * @brief Destructor
@@ -35,6 +37,11 @@ public:
 private:
     // Functions
     /**
+     * Run check on all game collisions (ceilings, paddles, out of bounds)
+    */
+    void check_collisions();
+
+    /**
      * @brief Handle collision between ball & ceiling
     */
     void handle_ceiling_collision(const SDL_Rect& ball, int& y_vel);
@@ -56,6 +63,11 @@ private:
      * @brief Center a rectangle on window
     */
     void center_rect(SDL_Rect& rect);
+
+    /**
+     * @brief Update game display (ball, paddle, explosion, score)
+    */
+    void update_game_display(); 
 
     // Constants
     const int PADDLE_WIDTH = 10;
@@ -143,6 +155,26 @@ private:
      * @brief Rectangle to describe explosion position / size
     */
     SDL_Rect m_explosion_pos = {0, 0, EXPLOSION_SIZE, EXPLOSION_SIZE};
+
+    /**
+     * @brief Start time when pausing ball on reset
+    */
+    uint32_t m_pause_start_t = 0;
+
+    /**
+     * @brief Start time when animating explosion
+    */
+    uint32_t m_explode_start_t = 0;
+
+    /**
+     * @brief Flag indicating that ball is reseting
+    */
+    bool m_reseting = false; 
+
+    /**
+     * @brief Flag inidicating that explosion is being shown
+    */
+    bool m_exploding = false; 
 };
 
 #endif // PONG_H
