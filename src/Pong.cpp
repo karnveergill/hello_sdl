@@ -31,7 +31,8 @@ Pong::Pong(SDL_Window* window,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Pong::Init_pong(const std::string& explosion_path)
+void Pong::Init_pong(const std::string& explosion_path, 
+                     const std::string& font_path)
 {
     // If we got an explosion asset load it
     if(!explosion_path.empty())
@@ -50,6 +51,15 @@ void Pong::Init_pong(const std::string& explosion_path)
     if(TTF_Init() == -1) 
     {
         throw Exception("SDL_ttf initialization failed %s\n",
+                        TTF_GetError());
+    }
+
+    // Load font
+    static TTF_Font* m_font = TTF_OpenFont(font_path.c_str(), 24);
+    if(!m_font)
+    {
+        throw Exception("Failed to load font %s: %s",
+                        font_path.c_str(),
                         TTF_GetError());
     }
 }
@@ -95,14 +105,47 @@ void Pong::Run_game_2_player()
     update_ball();
     
     // Clear the screen
+    
+
+    // Draw paddles and ball
+    
+
+    
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Pong::update_game_display()
+{
+    // Clear screen
     SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
     SDL_RenderClear(m_renderer);
 
-    // Draw paddles and ball
+    // Draw paddles & ball
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(m_renderer, &m_paddle_1);
     SDL_RenderFillRect(m_renderer, &m_paddle_2);
     SDL_RenderFillRect(m_renderer, &m_ball);
+
+    // Draw score
+    std::string p1_score_str = "P1: " + std::to_string(m_p1_score);
+    std::string p2_score_str = "P2: " + std::to_string(m_p2_score);
+    static const SDL_Color textColor = {255, 255, 255, 255}; 
+    static TTF_Font* font = TTF_OpenFont("resources/arial_unicode.ttf", 24);
+    SDL_Surface* textSurface1 = TTF_RenderText_Solid(font, p1_score_str.c_str(), textColor);
+    SDL_Rect textRect1 = {10, 10, textSurface1->w, textSurface1->h};
+    SDL_RenderCopy(renderer, 
+                   SDL_CreateTextureFromSurface(renderer, textSurface1),
+                   NULL, 
+                   &textRect1);
+    SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, p2_score_str.c_str(), textColor);
+    SDL_Rect textRect2 = {WINDOW_WIDTH - 100, 10, textSurface1->w, textSurface1->h};
+    SDL_RenderCopy(renderer, 
+                   SDL_CreateTextureFromSurface(renderer, textSurface2),
+                   NULL, 
+                   &textRect2);
+
+    // Draw Explosion
 
     // Update window display
     SDL_RenderPresent(m_renderer);

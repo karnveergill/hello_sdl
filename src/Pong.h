@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <string>
 
 class Pong
@@ -22,10 +23,12 @@ public:
 
     /**
      * @brief Initialize SDL_ttf & Explosion asset
+     * @param font_path Path to font
      * @param explosion_path [Optional] Path to explosion image
      * @throws If initialization fails, Exception thrown. 
     */
-    void Init_pong(const std::string& explosion_path="");
+    void Init_pong(const std::string& font_path,
+                   const std::string& explosion_path="");
 
     /**
      * @brief Initialize use of explosion graphic in game
@@ -78,17 +81,19 @@ private:
     void update_game_display(); 
 
     // Constants
-    const int PADDLE_WIDTH = 10;
-    const int PADDLE_HEIGHT = 100;
-    const int PADDLE_SPEED = 10;
-    const int PADDLE_1_X = 50;
-    const int BALL_SIZE = 10;
-    const int BALL_SPEED = 5;
-    const int RESET_TIME = 500;
-    const int EXPLOSION_SIZE = 40;
-    const int EXPLOSION_TIME = 100;
+    static const int PADDLE_WIDTH = 10;
+    static const int PADDLE_HEIGHT = 100;
+    static const int PADDLE_SPEED = 10;
+    static const int PADDLE_1_X = 50;
+    static const int BALL_SIZE = 10;
+    static const int BALL_SPEED = 5;
+    static const int RESET_TIME = 500;
+    static const int EXPLOSION_SIZE = 40;
+    static const int EXPLOSION_TIME = 100;
 
     // Member Variables 
+    TTF_Font* m_font = nullptr; 
+    
     /**
      * @brief Pointer to window that we will draw game on 
     */
