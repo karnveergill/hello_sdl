@@ -27,6 +27,9 @@ Pong::Pong(SDL_Window* window,
 
     m_ball.x = m_window_center_x;
     m_ball.y = m_window_center_y;
+
+    // Set p2 score X position 
+    m_score_2_rect.x = m_window_width - P2_SCORE_X_SHIFT; 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,7 +80,8 @@ void Pong::Init_explosion(const std::string& path)
     SDL_Texture* m_explosion = IMG_LoadTexture(m_renderer, path.c_str());
     if(!m_explosion)
     {
-        throw Exception("Failed to load explosion texture: %s", 
+        throw Exception("Failed to load explosion texture from %s: %s",
+                        path.c_str(), 
                         IMG_GetError());
     }
 }
@@ -130,75 +134,45 @@ void Pong::update_game_display()
 
     // Draw score
     std::string p1_score_str = "P1: " + std::to_string(m_p1_score);
+    SDL_Texture* p1_texture = create_score_texture(p1_score_str, m_score_1_rect);
+    SDL_RenderCopy(m_renderer, p1_texture, NULL, &m_score_1_rect);
+
+    // Player 2 score
     std::string p2_score_str = "P2: " + std::to_string(m_p2_score);
-    static const SDL_Color txt_color = {255,255,255,255}; // white
-    static TTF_Font* font = TTF_OpenFont("resources/arial_unicode.ttf", 24);
-
-    
-    SDL_Surface* txt_surface_1 = TTF_RenderText_Solid(font, 
-                                                      p1_score_str.c_str(), 
-                                                      txt_color);
-    if(!txt_surface_1)
-    {
-        printf("FAILED TO CREATE TEXT SURFACE 1: %s\n", TTF_GetError()); 
-    }
-    try
-    {
-        // SDL_Rect txt_rect_1 = {P1_SCORE_X, 
-        //                        SCORE_Y, 
-        //                        10, 
-        //                        5};
-        // SDL_RenderCopy(m_renderer, 
-        //                SDL_CreateTextureFromSurface(m_renderer, txt_surface_1),
-        //                NULL, 
-        //                &txt_rect_1);
-
-        // SDL_Surface* txt_surface_2 = TTF_RenderText_Solid(font, 
-        //                                                   p2_score_str.c_str(), 
-        //                                                   txt_color);
-        // SDL_Rect txt_rect_2 = {m_window_width - P2_SCORE_X_SHIFT, 
-        //                        SCORE_Y, 
-        //                        10, 
-        //                        5};
-        // SDL_RenderCopy(m_renderer, 
-        //                SDL_CreateTextureFromSurface(m_renderer, txt_surface_2),
-        //                NULL, 
-        //                &txt_rect_2);
-    }
-    catch(const std::exception& e)
-    {
-        printf("Failed to create score text: %s", e.what());
-    }
-    
-    // SDL_Rect txt_rect_1 = {P1_SCORE_X, 
-    //                        SCORE_Y, 
-    //                        txt_surface_1->w, 
-    //                        txt_surface_1->h};
-    // SDL_RenderCopy(m_renderer, 
-    //                SDL_CreateTextureFromSurface(m_renderer, txt_surface_1),
-    //                NULL, 
-    //                &txt_rect_1);
-    
-    SDL_Surface* txt_surface_2 = TTF_RenderText_Solid(m_font, 
-                                                      p2_score_str.c_str(), 
-                                                      m_text_color);
-    if(!txt_surface_2)
-    {
-        printf("FAILED TO CREATE TEXT SURFACE 2: %s\n", TTF_GetError());
-    }
-    // SDL_Rect txt_rect_2 = {m_window_width - P2_SCORE_X_SHIFT, 
-    //                        SCORE_Y, 
-    //                        txt_surface_2->w, 
-    //                        txt_surface_2->h};
-    // SDL_RenderCopy(m_renderer, 
-    //                SDL_CreateTextureFromSurface(m_renderer, txt_surface_2),
-    //                NULL, 
-    //                &txt_rect_2);
-
-    // Draw Explosion
+    SDL_Texture* p2_texture = create_score_texture(p2_score_str, m_score_2_rect);
+    SDL_RenderCopy(m_renderer, p2_texture, NULL, &m_score_2_rect);
 
     // Update window display
     SDL_RenderPresent(m_renderer);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+SDL_Texture* Pong::create_score_texture(const std::string& score, 
+                                        SDL_Rect& score_rect)
+{
+    // Create temporary surface 
+    SDL_Surface* txt_surface = TTF_RenderText_Solid(m_font, 
+                                                    score.c_str(), 
+                                                    m_txt_color);
+    if(!txt_surface)
+    {
+        throw Exception("Failed to create surface from text: %s", 
+                        TTF_GetError());
+    }
+
+    // Set height/widgth of rectangle
+    score_rect.w = txt_surface->w;
+    score_rect.h = txt_surface->h;
+
+    // Generate texture
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, 
+                                                        txt_surface);
+
+    // Clean up 
+    SDL_FreeSurface(txt_surface);
+
+    return texture; 
 }
 
 ///////////////////////////////////////////////////////////////////////////////

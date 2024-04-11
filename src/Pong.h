@@ -80,6 +80,15 @@ private:
     */
     void update_game_display(); 
 
+    /**
+     * @brief Create texture of score text to be displayed on screen. Additionally, 
+     * adjust height/width of SDL_Rect represeting placement of text on screen
+     * @param str Text to display for score
+     * @param score_rect Rectangle represeting position and size of score 
+    */
+    SDL_Texture* create_score_texture(const std::string& str,
+                                      SDL_Rect& score_rect);
+
     // Constants
     static const int PADDLE_WIDTH = 10;
     static const int PADDLE_HEIGHT = 100;
@@ -198,7 +207,17 @@ private:
     /**
      * @brief Text color 
     */
-    SDL_Color m_text_color = {255, 255, 255, 255};
+    SDL_Color m_txt_color = {255, 255, 255, 255};
+
+    /**
+     * @brief Rectangle representing P1 score size and position
+    */
+    SDL_Rect m_score_1_rect = {P1_SCORE_X, SCORE_Y, 0, 0};
+
+    /**
+     * @brief Rectangle representing P2 score size and position
+    */
+    SDL_Rect m_score_2_rect = {0, SCORE_Y, 0, 0};
 };
 
 #endif // PONG_H
