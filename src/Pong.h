@@ -90,10 +90,11 @@ private:
     static const int RESET_TIME = 500;
     static const int EXPLOSION_SIZE = 40;
     static const int EXPLOSION_TIME = 100;
+    static const int SCORE_Y = 10;
+    static const int P1_SCORE_X = 10;
+    static const int P2_SCORE_X_SHIFT = 100;
 
-    // Member Variables 
-    TTF_Font* m_font = nullptr; 
-    
+    // Member Variables
     /**
      * @brief Pointer to window that we will draw game on 
     */
@@ -188,6 +189,16 @@ private:
      * @brief Flag inidicating that explosion is being shown
     */
     bool m_exploding = false; 
+
+    /**
+     * @brief Text font
+    */
+    TTF_Font* m_font = nullptr; 
+
+    /**
+     * @brief Text color 
+    */
+    SDL_Color m_text_color = {255, 255, 255, 255};
 };
 
 #endif // PONG_H
