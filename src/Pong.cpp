@@ -89,8 +89,6 @@ void Pong::Init_explosion(const std::string& path)
 
 void Pong::Run_game_2_player()
 {
-    // This should call all the stuff that draws the 2 player game on the screen
-
     // Update paddles based on key inputs
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
     if (keystates[SDL_SCANCODE_W] && m_paddle_1.y > 0)
