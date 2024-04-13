@@ -77,10 +77,10 @@ void Pong::Init_pong(const std::string& font_path,
 
 void Pong::Init_explosion(const std::string& path)
 {
-    SDL_Texture* m_explosion = IMG_LoadTexture(m_renderer, path.c_str());
+    m_explosion = IMG_LoadTexture(m_renderer, path.c_str());
     if(!m_explosion)
     {
-        throw Exception("Failed to load explosion texture from %s: %s",
+        throw Exception("Failed to load explosion texture from %s: %s\n",
                         path.c_str(), 
                         IMG_GetError());
     }
@@ -139,8 +139,23 @@ void Pong::update_game_display()
 
     // Player 2 score
     std::string p2_score_str = "P2: " + std::to_string(m_p2_score);
-    SDL_Texture* p2_texture = create_score_texture(p2_score_str, m_score_2_rect);
+    SDL_Texture* p2_texture = nullptr;
+    try
+    {
+        create_score_texture(p2_score_str, m_score_2_rect);
+    }
+    catch(const Exception& e)
+    {
+        throw Exception("Failed to generate P2 score texture: %s", e.what());
+    }
     SDL_RenderCopy(m_renderer, p2_texture, NULL, &m_score_2_rect);
+
+    // Draw explosion
+    if(m_exploding)
+    {
+        // copy explosion to renderer
+        SDL_RenderCopy(m_renderer, m_explosion, NULL, &m_explosion_pos);
+    }
 
     // Update window display
     SDL_RenderPresent(m_renderer);
