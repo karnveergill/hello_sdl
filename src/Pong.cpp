@@ -115,7 +115,14 @@ void Pong::Run_game_2_player()
     update_ball();
     
     // Update dipslay graphics
-    update_game_display();    
+    try
+    {
+        update_game_display();
+    }
+    catch(const Exception& e)
+    {
+        throw Exception("Failed to updated game display: %s", e.what());
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -134,7 +141,15 @@ void Pong::update_game_display()
 
     // Draw score
     std::string p1_score_str = "P1: " + std::to_string(m_p1_score);
-    SDL_Texture* p1_texture = create_score_texture(p1_score_str, m_score_1_rect);
+    SDL_Texture* p1_texture = nullptr;
+    try
+    {
+        p1_texture = create_score_texture(p1_score_str, m_score_1_rect);
+    }
+    catch(const Exception& e)
+    {
+        throw Exception("Failed to generate P1 score SDL_Texture: %s", e.what());
+    }
     SDL_RenderCopy(m_renderer, p1_texture, NULL, &m_score_1_rect);
 
     // Player 2 score
@@ -142,11 +157,11 @@ void Pong::update_game_display()
     SDL_Texture* p2_texture = nullptr;
     try
     {
-        create_score_texture(p2_score_str, m_score_2_rect);
+        p2_texture = create_score_texture(p2_score_str, m_score_2_rect);
     }
     catch(const Exception& e)
     {
-        throw Exception("Failed to generate P2 score texture: %s", e.what());
+        throw Exception("Failed to generate P2 score SDL_Texture: %s", e.what());
     }
     SDL_RenderCopy(m_renderer, p2_texture, NULL, &m_score_2_rect);
 
@@ -172,7 +187,7 @@ SDL_Texture* Pong::create_score_texture(const std::string& score,
                                                     m_txt_color);
     if(!txt_surface)
     {
-        throw Exception("Failed to create surface from text: %s", 
+        throw Exception("Failed to create SDL_Surface from text: %s", 
                         TTF_GetError());
     }
 

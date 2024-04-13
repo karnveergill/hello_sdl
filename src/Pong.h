@@ -37,12 +37,20 @@ public:
     */
     void Init_explosion(const std::string& path);
 
-    // Functions to engage different game modes.  
-    void Run_main_menu();
-    void Run_game_1_player();
+    /**
+     * @brief Runs 2 player Pong by checking for P1 & P2 keyboard 
+     * inputs, updating ball position & velocity, and updating the 
+     * window display with ball, paddles, player scores, & out of 
+     * bounds explosion. 
+     * @throws Exception thrown if failure occures during display update
+    */
     void Run_game_2_player();
-    void Run_settings_menu();
-    void Run_player_pause(); 
+
+    // TODO: Implement functions to engage different game modes.  
+    //void Run_main_menu();
+    //void Run_game_1_player();
+    //void Run_settings_menu();
+    //void Run_player_pause(); 
 
 private:
     // Functions
@@ -77,6 +85,7 @@ private:
 
     /**
      * @brief Update game display (ball, paddle, explosion, score)
+     * @throws Exception thown if failed to generate P1 or P2 SDL_Texture
     */
     void update_game_display(); 
 
@@ -85,6 +94,7 @@ private:
      * adjust height/width of SDL_Rect represeting placement of text on screen
      * @param str Text to display for score
      * @param score_rect Rectangle represeting position and size of score 
+     * @throws Exception thrown if failed to create intermediate SDL_Surface
     */
     SDL_Texture* create_score_texture(const std::string& str,
                                       SDL_Rect& score_rect);
