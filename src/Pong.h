@@ -99,6 +99,16 @@ private:
     SDL_Texture* create_score_texture(const std::string& str,
                                       SDL_Rect& score_rect);
 
+    /**
+     * @brief Animate explosion by adjusting size and position of graphic
+    */
+    void animate_explosion();
+
+    /**
+     * @brief reset explosion size and x_lim flag
+    */
+    void reset_explosion();
+
     // Constants
     static const int PADDLE_WIDTH = 10;
     static const int PADDLE_HEIGHT = 100;
@@ -109,6 +119,9 @@ private:
     static const int RESET_TIME = 500;
     static const int EXPLOSION_SIZE = 40;
     static const int EXPLOSION_TIME = 100;
+    static const int EXPL_START_SIZE = 20;
+    static const int EXPL_STEP_SIZE = 2;
+    static const int EXPL_STEP_TIME = 10;
     static const int SCORE_Y = 10;
     static const int P1_SCORE_X = 10;
     static const int P2_SCORE_X_SHIFT = 100;
@@ -208,6 +221,11 @@ private:
      * @brief Flag inidicating that explosion is being shown
     */
     bool m_exploding = false; 
+
+    /**
+     * @brief True if explosion being drawn on x limit side of window
+    */
+    bool m_x_lim_explosion = false;
 
     /**
      * @brief Text font

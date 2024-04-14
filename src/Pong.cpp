@@ -165,12 +165,44 @@ void Pong::update_game_display()
     // Draw explosion
     if(m_exploding)
     {
-        // copy explosion to renderer
-        SDL_RenderCopy(m_renderer, m_explosion, NULL, &m_explosion_pos);
+        animate_explosion();
     }
 
     // Update window display
     SDL_RenderPresent(m_renderer);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Pong::animate_explosion()
+{
+    // The explosion size we like is 40 pixels, and we animate for 100 ms.
+    // If we have a start size, a step size, and step time we can incraese
+    // the size during the animation.
+    uint32_t now = SDL_GetTicks();
+    if(now - m_explode_start_t > EXPL_STEP_TIME)
+    {
+        // increase explosion size before drawing
+        m_explosion_pos.h += EXPL_STEP_SIZE;
+        m_explosion_pos.w += EXPL_STEP_SIZE;
+
+        if(m_x_lim_explosion)
+        {
+            m_explosion_pos.x -= EXPL_STEP_SIZE;
+        }
+    }
+
+    // copy explosion to renderer
+    SDL_RenderCopy(m_renderer, m_explosion, NULL, &m_explosion_pos);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Pong::reset_explosion()
+{
+    m_explosion_pos.h = EXPL_START_SIZE;
+    m_explosion_pos.w = EXPL_START_SIZE;
+    m_x_lim_explosion = false; 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -225,6 +257,7 @@ void Pong::update_ball()
     if(now - m_explode_start_t > EXPLOSION_TIME)
     {
         m_exploding = false; 
+        reset_explosion();
     }
 
     // Update ball position
@@ -273,6 +306,7 @@ bool Pong::handle_ball_out_of_bound(SDL_Rect& ball,
     int shift = 0;
     if(ball.x > m_window_width)
     {
+        m_x_lim_explosion = true;
         reset = true;
         p1_score++;
         shift = -1;
@@ -286,7 +320,7 @@ bool Pong::handle_ball_out_of_bound(SDL_Rect& ball,
     if(reset)
     {
         // Save position
-        m_explosion_pos.x = ball.x+(shift*EXPLOSION_SIZE);
+        m_explosion_pos.x = ball.x+(shift*EXPL_START_SIZE);
         m_explosion_pos.y = ball.y; 
 
         // Reset ball
