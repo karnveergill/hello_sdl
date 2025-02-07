@@ -1,6 +1,6 @@
 # hello_sdl : pong
 
-This repository contains pong writen using SDL2.  
+This repository contains pong writen in C++ using and SDL2 to implement a pong class that can be initialized with an SDL window and handle running the game.  
 ![pong game screenshot](doc/pong_screenshot.png)
 
 ## Dependencies
